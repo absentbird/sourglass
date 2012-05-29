@@ -23,15 +23,28 @@ if not os.path.exists(basepath+'logs'):
 # Function to load the name and status of the last project accessed
 def getLast():
     store = open(basepath + 'last', 'r')
-    last = store.readline().rstrip('\n').partition(' ')
+    last = store.readline().rstrip('\n').split()
     store.close()
+    path = getPath(last[0])
+    with open(path, 'rb') as log:
+        reader = csv.reader(log)
+        for row in reader:
+            if row[1] == 'a' or row[1] == 's':
+                line = row
+    try: 
+        line
+    except NameError:
+        last[1] = 's'
+    else:
+        last[1] = line[1]
     return last
 
 # Fetch the file for the project. Prompt creation if none exists.
 def getPath(project):
     if project == '.sourglass':
-        return project
-    path = basepath + 'logs/' + project + '.csv'
+        path = project
+    else:
+        path = basepath + 'logs/' + project + '.csv'
     try:
         open(path)
     except IOError as e:
@@ -45,11 +58,11 @@ def getPath(project):
 # Invert the status unless flag was set
 def getStatus(last):
     if not arguments.update:
-        return last[2]
-    if last[2]:
-        if last[2] == 'a':
+        return last[1]
+    if last[1]:
+        if last[1] == 'a':
             return 's'
-        if last[2] == 's':
+        if last[1] == 's':
             return 'a'
     else:
         return 'a'
@@ -62,16 +75,17 @@ def recordLog(project, status, memo):
     writer.writerow((time.time(), status, memo))
     log.close()
     if status == 'a':
-        print "Tracking your time."
+        print "Tracking your time on " + project
     if status == 's':
-        print "Tracking suspended."
+        print "Tracking suspended on " + project
     if status == 't':
         print "Time shifted."
-    store = open(basepath + 'last', 'w')
-    if status == 't':
-        status = last[2]
-    store.write(project+' '+status)
-    store.close
+    if not path == '.sourglass':
+        store = open(basepath + 'last', 'w')
+        if status == 't':
+            status = last[1]
+        store.write(project)
+        store.close
 
 # Total the hours on the project
 def totalHours(path):
@@ -112,9 +126,9 @@ else:
     try: 
         line
     except NameError:
-        last = ('.sourglass', ' ', 's')
+        last = ('.sourglass', 's')
     else:
-        last = ('.sourglass', ' ', line[1])
+        last = ('.sourglass', line[1])
 
 # Check if a project flag was set
 if arguments.project:
@@ -127,7 +141,7 @@ if arguments.project:
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-        last = (arguments.project[0], ' ', line[1])
+        last = (arguments.project[0], line[1])
         log.close()
 
 # If an -t flag was set, total the hours.
