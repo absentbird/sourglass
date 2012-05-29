@@ -125,7 +125,7 @@ if arguments.project:
         log = open(path, 'rb')
         reader = csv.reader(log)
         for row in reader:
-            if row[2] == 'a' or row[2] == 's':
+            if row[1] == 'a' or row[1] == 's':
                 line = row
         last = (arguments.project[0], ' ', line[1])
         log.close()
