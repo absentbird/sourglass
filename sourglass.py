@@ -172,7 +172,7 @@ if arguments.shift:
     exit()
 
 if arguments.audit:
-    print last[0] + " Time Audit:\n"
+    print last[0] + " Audit:\n"
     print "Time \t \t Action \t Memo"
     dashes = ''
     i = 0
