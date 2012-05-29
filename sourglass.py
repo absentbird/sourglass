@@ -1,5 +1,4 @@
 import os
-from sys import argv
 import argparse
 import time
 import csv
@@ -10,7 +9,7 @@ parser.add_argument('-p', '--project', type=str, nargs=1, action='store', dest='
 parser.add_argument('-m', '--memo', action='store_false', dest='update', help='Add a memo without changing the tracking status.')
 parser.add_argument('-t', '--total', action='store_true', dest='total', help='Total up the hours worked on the project.')
 parser.add_argument('-r', '--remove', type=int, nargs='?', const=1, action='store', dest='remove', help='Remove lines from the log starting with the most recent.')
-parser.add_argument('-s', '--shift', type=int, nargs='1', action='store', dest='shift', help='Shift time by a number of minutes seconds or hours. Notation is (+|-)n(s|m|h) Examples: Add 10 minutes "+10m". Remove one hour "-1h". Add 40 seconds would be "+40s".')
+parser.add_argument('-s', '--shift', type=str, nargs=1, action='store', dest='shift', help='Shift time by a number of minutes seconds or hours. Ex: Add 10 minutes t+10m remove one hour t-1h add 40 seconds t+40s.')
 parser.add_argument('--audit', action='store_true', dest='audit', help='Print all memos and times on the log to the screen with a total.')
 parser.add_argument('memo', metavar='m', type=str, nargs='?', default='', help='A memo of what was done')
 
@@ -36,14 +35,10 @@ def getPath(project):
     try:
         open(path)
     except IOError as e:
-        print "Start new project?"
-        new = raw_input('y/n > ')
-        if new == 'y':
-            f = open(path, 'w')
-            f.close()
-            return path
-        else:
-            exit()
+        f = open(path, 'w')
+        f.close()
+        print "Started new project."
+        return path
     else:
         return path
 
@@ -70,7 +65,11 @@ def recordLog(project, status, memo):
         print "Tracking your time."
     if status == 's':
         print "Tracking suspended."
+    if status == 't':
+        print "Time shifted."
     store = open(basepath + 'last', 'w')
+    if status == 't':
+        status = last[2]
     store.write(project+' '+status)
     store.close
 
@@ -82,19 +81,22 @@ def totalHours(path):
     with open(path, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
-            final = row
-            if active:
-                if row[1] == 's':
-                    total += float(row[0]) - start
-                    active = False
+            if row[1] == 't':
+                total += float(row[2])
             else:
-                if row[1] == 'a':
-                    start = float(row[0])
-                    active = True
-    if active and final[1] == 'a':
+                if active:
+                    if row[1] == 's':
+                        total += float(row[0]) - start
+                        active = False
+                else:
+                    if row[1] == 'a':
+                        start = float(row[0])
+                        active = True
+                        final = row
+    if active:
         total += time.time() - float(final[0])
         active = False
-    return total / 3600
+    return "%.2f" % (total / 3600)
 
 # Check for a local .sourglass log
 try:
@@ -105,7 +107,8 @@ else:
     with open(os.getcwd() + '/.sourglass', 'rb') as log:
         reader = csv.reader(log)
         for row in reader:
-            line = row
+            if row[1] == 'a' or row[1] == 's':
+                line = row
     try: 
         line
     except NameError:
@@ -122,7 +125,8 @@ if arguments.project:
         log = open(path, 'rb')
         reader = csv.reader(log)
         for row in reader:
-            line = row
+            if row[2] == 'a' or row[2] == 's':
+                line = row
         last = (arguments.project[0], ' ', line[1])
         log.close()
 
@@ -140,9 +144,46 @@ if arguments.remove:
     exit()
 
 if arguments.shift:
-    exit() 
+    shift = arguments.shift[0];
+    increment = shift[-1]
+    shift = shift[1:-1]
+    if increment == 's':
+        shift = float(shift)
+    elif increment == 'm':
+        shift = float(shift) * 60
+    elif increment == 'h':
+        shift = float(shift) * 3600
+    else:
+        exit(increment+" is not a supported increment. Please use s (seconds), m (minutes) or h (hours)")
+    recordLog(last[0], 't', shift)
+    exit()
 
 if arguments.audit:
+    print last[0] + " Time Audit:\n"
+    print "Time \t \t Action \t Memo"
+    dashes = ''
+    i = 0
+    while i < 50:
+        dashes += '-'
+        i += 1
+    print dashes
+    with open(getPath(last[0]), 'r') as log:
+        reader = csv.reader(log)
+        for row in reader:
+            row[0] = time.strftime("%D %H:%M", time.localtime(float(row[0])))
+            if row[1] == 't':
+                row[1] = 'Time Shifted'
+                row[2] = float(row[2]) / 60
+                if row[2] > 0:
+                    row[2] = '+' + str(row[2]) + ' Minutes'
+                else:
+                    row[2] = str(row[2]) + ' Minutes'
+            if row[1] == 'a':
+                row[1] = 'Activated'
+            if row[1] == 's':
+                row[1] = 'Suspended'
+            print row[0] + '\t' + row[1] + '\t' + row[2]
+    print "\nTotal Hours Logged: " + str(totalHours(getPath(last[0])))
     exit()
 
 # As long as no flags would stop an entry from being made, make one.
