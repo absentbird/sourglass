@@ -16,13 +16,27 @@ parser.add_argument('memo', metavar='m', type=str, nargs='?', default='', help='
 arguments = parser.parse_args()
 
 # Set basepath for file and create directories
-basepath = os.path.expanduser('~/.sourglass/')
-if not os.path.exists(basepath+'logs'):
-    os.makedirs(basepath+'logs')
+basepath = os.path.expanduser('~')
+basepath = os.path.join(basepath, '.sourglass')
+print basepath
+if not os.path.exists(os.path.join(basepath, 'logs')):
+    os.makedirs(os.path.join(basepath, 'logs'))
 
 # Function to load the name and status of the last project accessed
 def getLast():
-    store = open(basepath + 'last', 'r')
+    try:
+        open(os.path.join(basepath, 'last'))
+    except IOError as e:
+        try:
+            arguments.project
+        except NameError:
+            print "No current project. Start one with -p"
+            exit()
+        else:
+            f = open(os.path.join(basepath, 'last'), 'w')
+            f.write(arguments.project[0])
+            f.close()
+    store = open(os.path.join(basepath, 'last'), 'r')
     last = store.readline().rstrip('\n')
     last = [last, 's']
     store.close()
@@ -45,7 +59,7 @@ def getPath(project):
     if project == '.sourglass':
         path = project
     else:
-        path = basepath + 'logs/' + project + '.csv'
+        path = os.path.join(basepath, 'logs', project + '.csv')
     try:
         open(path)
     except IOError as e:
@@ -82,7 +96,7 @@ def recordLog(project, status, memo):
     if status == 't':
         print "Time shifted on " + project
     if not path == '.sourglass':
-        store = open(basepath + 'last', 'w')
+        store = open(os.path.join(basepath, 'last'), 'w')
         store.write(project)
         store.close
 
@@ -113,7 +127,7 @@ def totalHours(path):
 
 # Check for a local .sourglass log
 try:
-    open(os.getcwd() + '/.sourglass')
+    open(os.path.join(os.getcwd(), '.sourglass'))
 except IOError as e:
     last = getLast()
 else:
