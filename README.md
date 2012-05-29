@@ -10,7 +10,7 @@ The log files are stored as `.csv` files.
 Usage
 ---------
 
-Every statement that will leave a log entry can be followed by a memo.
+Every statement that will leave a log entry (except for time shifts) can be followed by a memo.
 
 Any oporation can have use the -p (--project) flag to set the project
 
@@ -43,3 +43,7 @@ To stop/start time tracking type `python sourglass.py -p '<project name>'`
 To toggle the tracking status on the last project used type `python sourglass.py`
 
 To print the hours logged on the current project type `python sourglass.py -t`
+
+###Tips
+
+Typing `python sourglass.py -p '.sourglass'` will create the log in your current working directory.
