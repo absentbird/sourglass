@@ -23,7 +23,8 @@ if not os.path.exists(basepath+'logs'):
 # Function to load the name and status of the last project accessed
 def getLast():
     store = open(basepath + 'last', 'r')
-    last = store.readline().rstrip('\n').split()
+    last = store.readline().rstrip('\n')
+    last = [last, 's']
     store.close()
     path = getPath(last[0])
     with open(path, 'rb') as log:
