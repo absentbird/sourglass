@@ -79,11 +79,9 @@ def recordLog(project, status, memo):
     if status == 's':
         print "Tracking suspended on " + project
     if status == 't':
-        print "Time shifted."
+        print "Time shifted on " + project
     if not path == '.sourglass':
         store = open(basepath + 'last', 'w')
-        if status == 't':
-            status = last[1]
         store.write(project)
         store.close
 
