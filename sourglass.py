@@ -135,12 +135,17 @@ if arguments.project:
         pass
     else:
         path = getPath(arguments.project[0])
-        log = open(path, 'rb')
+        log = open(path, 'r')
         reader = csv.reader(log)
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-        last = (arguments.project[0], line[1])
+        try:
+            line
+        except NameError:
+            last = (arguments.project[0], 's')
+        else:
+            last = (arguments.project[0], line[1])
         log.close()
 
 # If an -t flag was set, total the hours.
