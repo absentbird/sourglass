@@ -20,7 +20,7 @@ arguments = parser.parse_args()
 # Set basepath for file and create directories
 basepath = os.path.expanduser('~')
 basepath = os.path.join(basepath, '.sourglass')
-print basepath
+print(basepath)
 if not os.path.exists(os.path.join(basepath, 'logs')):
     os.makedirs(os.path.join(basepath, 'logs'))
 
@@ -34,7 +34,7 @@ def getLast():
         try:
             arguments.project
         except NameError:
-            print "No current project. Start one with -p"
+            print("No current project. Start one with -p")
             exit()
         else:
             f = open(os.path.join(basepath, 'last'), 'w')
@@ -45,7 +45,7 @@ def getLast():
     last = [last, 's']
     store.close()
     path = getPath(last[0])
-    with open(path, 'rb') as log:
+    with open(path, 'r') as log:
         reader = csv.reader(log)
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
@@ -71,7 +71,7 @@ def getPath(project):
     except IOError:
         f = open(path, 'w')
         f.close()
-        print "Started new project."
+        print("Started new project.")
         return path
     else:
         return path
@@ -100,11 +100,11 @@ def recordLog(project, status, memo):
     writer.writerow((time.time(), status, memo))
     log.close()
     if status == 'a':
-        print "Tracking your time on " + project
+        print("Tracking your time on " + project)
     if status == 's':
-        print "Tracking suspended on " + project
+        print("Tracking suspended on " + project)
     if status == 't':
-        print "Time shifted on " + project
+        print("Time shifted on " + project)
     if not path == '.sourglass':
         store = open(os.path.join(basepath, 'last'), 'w')
         store.write(project)
@@ -117,7 +117,7 @@ def totalHours(path):
     total = 0
     start = 0
     active = False
-    with open(path, 'rb') as f:
+    with open(path, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             if row[1] == 't':
@@ -143,7 +143,7 @@ try:
 except IOError as e:
     last = getLast()
 else:
-    with open(os.getcwd() + '/.sourglass', 'rb') as log:
+    with open(os.getcwd() + '/.sourglass', 'r') as log:
         reader = csv.reader(log)
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
@@ -176,7 +176,7 @@ if arguments.project:
 
 # If an -t flag was set, total the hours.
 if arguments.total:
-    print totalHours(getPath(last[0]))
+    print(totalHours(getPath(last[0])))
     exit()
 
 if arguments.remove:
@@ -203,14 +203,14 @@ if arguments.shift:
     exit()
 
 if arguments.audit:
-    print last[0] + " Audit:\n"
-    print "Time \t \t Action \t Memo"
+    print(last[0] + " Audit:\n")
+    print("Time \t \t Action \t Memo")
     dashes = ''
     i = 0
     while i < 50:
         dashes += '-'
         i += 1
-    print dashes
+    print(dashes)
     with open(getPath(last[0]), 'r') as log:
         reader = csv.reader(log)
         for row in reader:
@@ -226,8 +226,8 @@ if arguments.audit:
                 row[1] = 'Activated'
             if row[1] == 's':
                 row[1] = 'Suspended'
-            print row[0] + '\t' + row[1] + '\t' + row[2]
-    print "\nTotal Hours Logged: " + str(totalHours(getPath(last[0])))
+            print(row[0] + '\t' + row[1] + '\t' + row[2])
+    print("\nTotal Hours Logged: " + str(totalHours(getPath(last[0]))))
     exit()
 
 # As long as no flags would stop an entry from being made, make one.
