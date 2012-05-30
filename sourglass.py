@@ -1,10 +1,13 @@
+#!/usr/bin/env python
+"""Log time tracking information."""
+
 import os
 import argparse
 import time
 import csv
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Log time tracking information')
+parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-p', '--project', type=str, nargs=1, action='store', dest='project', help='The project name. Defaults to last project opened')
 parser.add_argument('-m', '--memo', action='store_false', dest='update', help='Add a memo without changing the tracking status.')
 parser.add_argument('-t', '--total', action='store_true', dest='total', help='Total up the hours worked on the project.')
@@ -18,19 +21,20 @@ arguments = parser.parse_args()
 # Set basepath for file and create directories
 basepath = os.path.expanduser('~')
 basepath = os.path.join(basepath, '.sourglass')
-print basepath
+print(basepath)
 if not os.path.exists(os.path.join(basepath, 'logs')):
     os.makedirs(os.path.join(basepath, 'logs'))
 
-# Function to load the name and status of the last project accessed
+
 def getLast():
+    """Function to load the name and status of the last project accessed."""
     try:
         open(os.path.join(basepath, 'last'))
-    except IOError as e:
+    except IOError:
         try:
             arguments.project
         except NameError:
-            print "No current project. Start one with -p"
+            print("No current project. Start one with -p")
             exit()
         else:
             f = open(os.path.join(basepath, 'last'), 'w')
@@ -41,12 +45,12 @@ def getLast():
     last = [last, 's']
     store.close()
     path = getPath(last[0])
-    with open(path, 'rb') as log:
+    with open(path, 'r') as log:
         reader = csv.reader(log)
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-    try: 
+    try:
         line
     except NameError:
         last[1] = 's'
@@ -54,24 +58,26 @@ def getLast():
         last[1] = line[1]
     return last
 
-# Fetch the file for the project. Prompt creation if none exists.
+
 def getPath(project):
+    """Fetch the file for the project. Prompt creation if none exists."""
     if project == '.sourglass':
         path = project
     else:
         path = os.path.join(basepath, 'logs', project + '.csv')
     try:
         open(path)
-    except IOError as e:
+    except IOError:
         f = open(path, 'w')
         f.close()
-        print "Started new project."
+        print("Started new project.")
         return path
     else:
         return path
 
-# Invert the status unless flag was set
+
 def getStatus(last):
+    """Invert the status unless flag was set."""
     if not arguments.update:
         return last[1]
     if last[1]:
@@ -82,30 +88,32 @@ def getStatus(last):
     else:
         return 'a'
 
-# Write the entry to the log
+
 def recordLog(project, status, memo):
+    """Write the entry to the log."""
     path = getPath(project)
     log = open(path, 'a')
     writer = csv.writer(log, lineterminator='\n')
     writer.writerow((time.time(), status, memo))
     log.close()
     if status == 'a':
-        print "Tracking your time on " + project
+        print("Tracking your time on " + project)
     if status == 's':
-        print "Tracking suspended on " + project
+        print("Tracking suspended on " + project)
     if status == 't':
-        print "Time shifted on " + project
+        print("Time shifted on " + project)
     if not path == '.sourglass':
         store = open(os.path.join(basepath, 'last'), 'w')
         store.write(project)
         store.close
 
-# Total the hours on the project
+
 def totalHours(path):
+    """Total the hours on the project."""
     total = 0
     start = 0
     active = False
-    with open(path, 'rb') as f:
+    with open(path, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
             if row[1] == 't':
@@ -131,12 +139,12 @@ try:
 except IOError as e:
     last = getLast()
 else:
-    with open(os.getcwd() + '/.sourglass', 'rb') as log:
+    with open(os.getcwd() + '/.sourglass', 'r') as log:
         reader = csv.reader(log)
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-    try: 
+    try:
         line
     except NameError:
         last = ('.sourglass', 's')
@@ -164,7 +172,7 @@ if arguments.project:
 
 # If an -t flag was set, total the hours.
 if arguments.total:
-    print totalHours(getPath(last[0]))
+    print(totalHours(getPath(last[0])))
     exit()
 
 if arguments.remove:
@@ -176,7 +184,7 @@ if arguments.remove:
     exit()
 
 if arguments.shift:
-    shift = arguments.shift[0];
+    shift = arguments.shift[0]
     increment = shift[-1]
     shift = shift[1:-1]
     if increment == 's':
@@ -186,19 +194,19 @@ if arguments.shift:
     elif increment == 'h':
         shift = float(shift) * 3600
     else:
-        exit(increment+" is not a supported increment. Please use s (seconds), m (minutes) or h (hours)")
+        exit(increment + " is not a supported increment. Please use s (seconds), m (minutes) or h (hours)")
     recordLog(last[0], 't', shift)
     exit()
 
 if arguments.audit:
-    print last[0] + " Audit:\n"
-    print "Time \t \t Action \t Memo"
+    print(last[0] + " Audit:\n")
+    print("Time \t \t Action \t Memo")
     dashes = ''
     i = 0
     while i < 50:
         dashes += '-'
         i += 1
-    print dashes
+    print(dashes)
     with open(getPath(last[0]), 'r') as log:
         reader = csv.reader(log)
         for row in reader:
@@ -214,8 +222,8 @@ if arguments.audit:
                 row[1] = 'Activated'
             if row[1] == 's':
                 row[1] = 'Suspended'
-            print row[0] + '\t' + row[1] + '\t' + row[2]
-    print "\nTotal Hours Logged: " + str(totalHours(getPath(last[0])))
+            print(row[0] + '\t' + row[1] + '\t' + row[2])
+    print("\nTotal Hours Logged: " + str(totalHours(getPath(last[0]))))
     exit()
 
 # As long as no flags would stop an entry from being made, make one.
