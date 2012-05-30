@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Log time tracking information."""
 
 import os
 import argparse
@@ -6,7 +7,7 @@ import time
 import csv
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Log time tracking information')
+parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-p', '--project', type=str, nargs=1, action='store', dest='project', help='The project name. Defaults to last project opened')
 parser.add_argument('-m', '--memo', action='store_false', dest='update', help='Add a memo without changing the tracking status.')
 parser.add_argument('-t', '--total', action='store_true', dest='total', help='Total up the hours worked on the project.')
