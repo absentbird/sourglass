@@ -24,10 +24,9 @@ print(basepath)
 if not os.path.exists(os.path.join(basepath, 'logs')):
     os.makedirs(os.path.join(basepath, 'logs'))
 
-# Function to load the name and status of the last project accessed
-
 
 def getLast():
+    """Function to load the name and status of the last project accessed."""
     try:
         open(os.path.join(basepath, 'last'))
     except IOError:
@@ -58,10 +57,9 @@ def getLast():
         last[1] = line[1]
     return last
 
-# Fetch the file for the project. Prompt creation if none exists.
-
 
 def getPath(project):
+    """Fetch the file for the project. Prompt creation if none exists."""
     if project == '.sourglass':
         path = project
     else:
@@ -76,10 +74,9 @@ def getPath(project):
     else:
         return path
 
-# Invert the status unless flag was set
-
 
 def getStatus(last):
+    """Invert the status unless flag was set."""
     if not arguments.update:
         return last[1]
     if last[1]:
@@ -90,10 +87,9 @@ def getStatus(last):
     else:
         return 'a'
 
-# Write the entry to the log
-
 
 def recordLog(project, status, memo):
+    """Write the entry to the log."""
     path = getPath(project)
     log = open(path, 'a')
     writer = csv.writer(log, lineterminator='\n')
@@ -110,10 +106,9 @@ def recordLog(project, status, memo):
         store.write(project)
         store.close
 
-# Total the hours on the project
-
 
 def totalHours(path):
+    """Total the hours on the project."""
     total = 0
     start = 0
     active = False
