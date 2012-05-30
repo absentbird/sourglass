@@ -23,6 +23,8 @@ if not os.path.exists(os.path.join(basepath, 'logs')):
     os.makedirs(os.path.join(basepath, 'logs'))
 
 # Function to load the name and status of the last project accessed
+
+
 def getLast():
     try:
         open(os.path.join(basepath, 'last'))
@@ -46,7 +48,7 @@ def getLast():
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-    try: 
+    try:
         line
     except NameError:
         last[1] = 's'
@@ -55,6 +57,8 @@ def getLast():
     return last
 
 # Fetch the file for the project. Prompt creation if none exists.
+
+
 def getPath(project):
     if project == '.sourglass':
         path = project
@@ -71,6 +75,8 @@ def getPath(project):
         return path
 
 # Invert the status unless flag was set
+
+
 def getStatus(last):
     if not arguments.update:
         return last[1]
@@ -83,6 +89,8 @@ def getStatus(last):
         return 'a'
 
 # Write the entry to the log
+
+
 def recordLog(project, status, memo):
     path = getPath(project)
     log = open(path, 'a')
@@ -101,6 +109,8 @@ def recordLog(project, status, memo):
         store.close
 
 # Total the hours on the project
+
+
 def totalHours(path):
     total = 0
     start = 0
@@ -136,7 +146,7 @@ else:
         for row in reader:
             if row[1] == 'a' or row[1] == 's':
                 line = row
-    try: 
+    try:
         line
     except NameError:
         last = ('.sourglass', 's')
@@ -176,7 +186,7 @@ if arguments.remove:
     exit()
 
 if arguments.shift:
-    shift = arguments.shift[0];
+    shift = arguments.shift[0]
     increment = shift[-1]
     shift = shift[1:-1]
     if increment == 's':
@@ -186,7 +196,7 @@ if arguments.shift:
     elif increment == 'h':
         shift = float(shift) * 3600
     else:
-        exit(increment+" is not a supported increment. Please use s (seconds), m (minutes) or h (hours)")
+        exit(increment + " is not a supported increment. Please use s (seconds), m (minutes) or h (hours)")
     recordLog(last[0], 't', shift)
     exit()
 
