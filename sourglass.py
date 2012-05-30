@@ -30,7 +30,7 @@ if not os.path.exists(os.path.join(basepath, 'logs')):
 def getLast():
     try:
         open(os.path.join(basepath, 'last'))
-    except IOError as e:
+    except IOError:
         try:
             arguments.project
         except NameError:
@@ -68,7 +68,7 @@ def getPath(project):
         path = os.path.join(basepath, 'logs', project + '.csv')
     try:
         open(path)
-    except IOError as e:
+    except IOError:
         f = open(path, 'w')
         f.close()
         print "Started new project."
