@@ -3,6 +3,8 @@ Sourglass
 
 The Simple Hour Glass. A simple, fast, CLI program to track time on projects.
 
+[![Build Status](https://secure.travis-ci.org/myint/sourglass.png)](http://travis-ci.org/myint/sourglass)
+
 The basic structure of sourglass is to be as simple and easy as possible. The first time you start sourglass it will create a `.sourglass` folder in your home directory. In there you will find a `logs` folder which will contain the time logs of any projects you start and a 'last' file which just holds the name and state of the last project you altered.
 
 The log files are stored as `.csv` files.
