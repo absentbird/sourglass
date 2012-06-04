@@ -1,9 +1,7 @@
 Sourglass
 =========
 
-.. image:: https://secure.travis-ci.org/myint/sourglass.png
-   :target: https://secure.travis-ci.org/myint/sourglass
-   :alt: Build status
+[![Build Status](https://secure.travis-ci.org/myint/sourglass.png)](http://travis-ci.org/myint/sourglass)
 
 The Simple Hour Glass. A simple, fast, CLI program to track time on projects.
 
