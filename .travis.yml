@@ -9,4 +9,5 @@ install:
 before_install:
     - if [ "$TRAVIS_PYTHON_VERSION" == "2.6" ]; then pip --quiet install argparse; fi
 script:
+    # TODO: Replace this with a test command when tests are added
     - python -m py_compile sourglass.py
