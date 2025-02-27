@@ -3,8 +3,6 @@ Sourglass
 
 The Simple Hour Glass. A simple, fast, CLI program to track time on projects.
 
-[![Build Status](https://secure.travis-ci.org/myint/sourglass.png)](http://travis-ci.org/myint/sourglass)
-
 The basic structure of sourglass is to be as simple and easy as possible. The first time you start sourglass it will create a `.sourglass` folder in your home directory. In there you will find a `logs` folder which will contain the time logs of any projects you start and a 'last' file which just holds the name and state of the last project you altered.
 
 The log files are stored as `.csv` files.
@@ -20,7 +18,7 @@ If a project does not exist it will be made.
 
 If a .sourglass file is in your current working directory and you did not set the -p flag the .sourglass file will be used as a log.
 
-###Commands
+### Commands
 
 `-h` Print a help file
 
@@ -36,7 +34,7 @@ If a .sourglass file is in your current working directory and you did not set th
 
 `--audit` Print an audit of the log with human readible times and memos and a total.
 
-###Examples
+### Examples
 
 To start a new project type: `python sourglass.py -p '<project name>' [optional memo]`
 
@@ -46,6 +44,6 @@ To toggle the tracking status on the last project used type `python sourglass.py
 
 To print the hours logged on the current project type `python sourglass.py -t`
 
-###Tips
+### Tips
 
 Typing `python sourglass.py -p '.sourglass'` will create the log in your current working directory.
